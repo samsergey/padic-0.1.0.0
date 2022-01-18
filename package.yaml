@@ -1,0 +1,62 @@
+name:                padic
+version:             0.1.0.0
+github:              "samsergey/padic"
+license:             MIT
+author:              "Sergey B. Samoylenko <samsergey@yandex.ru>"
+maintainer:          "samsergey@yandex.ru"
+copyright:           "2022 Sergey B. Samoylenko"
+category:            Math, Number Theory
+synopsis:            Fast, type-safe p-adic arithmetic
+homepage:            https://github.com/samsergey/padic-0.1.0.0
+bug-reports:         https://github.com/samsergey/padic-0.1.0.0/issues
+tested-with:         GHC ==8.10.7
+  
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:
+  Implementation of p-adic arithmetics on the base of fast modular arithmetics.
+  Module introduces data types for p-adic integers and rationals with arbitrary precision as well as 
+  some specific functions (rational reconstruction, p-adic signum function, square roots etc.).
+
+dependencies:
+ - base >= 4.14 && < 4.17
+ - constraints >= 0.13
+ - integer-gmp >= 1.0.3
+ - mod >= 0.1.2.2
+ 
+library:
+  source-dirs: src
+
+tests:
+  padic-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base >= 4.14
+    - padic
+    - tasty >= 1.4.2
+    - tasty-hunit >= 0.10
+    - tasty-quickcheck >= 0.10
+    - tasty-expected-failure >= 0.12
+    - QuickCheck >= 2.14.2
+
+benchmarks:
+  criterion-benchmarks:
+    dependencies:
+      - criterion >= 1.5.12
+      - padic
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    main: Bench.hs
+    source-dirs: bench
