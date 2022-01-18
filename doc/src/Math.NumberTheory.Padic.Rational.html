@@ -1,0 +1,937 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_HADDOCK hide, prune, ignore-exports #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE TypeFamilies #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Math.NumberTheory.Padic.Rational</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">intercalate</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Ratio</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Mod</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeLits</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Nat</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">natVal</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html"><span class="hs-identifier">Math.NumberTheory.Padic.Types</span></a></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Analysis.html"><span class="hs-identifier">Math.NumberTheory.Padic.Analysis</span></a></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html"><span class="hs-identifier">Math.NumberTheory.Padic.Integer</span></a></span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-comment">------------------------------------------------------------</span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Rational</span></span><span> </span><span id="local-6989586621679058262"><span class="annot"><a href="#local-6989586621679058262"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058262"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word</span></span><span> </span><span class="annot"><a href="#local-6989586621679058262"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058260"><span class="annot"><a href="#local-6989586621679058260"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058260"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><a href="#local-6989586621679058260"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058259"><span class="annot"><a href="#local-6989586621679058259"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058259"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span> </span><span class="annot"><a href="#local-6989586621679058259"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word16</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058258"><span class="annot"><a href="#local-6989586621679058258"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058258"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word16</span></span><span> </span><span class="annot"><a href="#local-6989586621679058258"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058257"><span class="annot"><a href="#local-6989586621679058257"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058257"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><a href="#local-6989586621679058257"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058256"><span class="annot"><a href="#local-6989586621679058256"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058256"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="annot"><a href="#local-6989586621679058256"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058255"><span class="annot"><a href="#local-6989586621679058255"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058255"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="annot"><a href="#local-6989586621679058255"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="hs-comment">------------------------------------------------------------</span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- |  Rational p-adic number (an element of \(\mathbb{Q}_p\)) with default precision.</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">type</span><span> </span><span id="Q"><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q"><span class="hs-identifier hs-var">Q</span></a></span></span><span> </span><span id="local-6989586621679058253"><span class="annot"><a href="#local-6989586621679058253"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058253"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><a href="#local-6989586621679058253"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- |  Rational p-adic number with explicitly specified precision.</span><span>
+</span><span id="line-33"></span><span class="hs-keyword">data</span><span> </span><span id="Q%27"><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058344"><span class="annot"><a href="#local-6989586621679058344"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058343"><span class="annot"><a href="#local-6989586621679058343"><span class="hs-identifier hs-type">prec</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Q%27"><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-type">Z'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058344"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058343"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-34"></span><span>
+</span><span id="line-35"></span><span id="local-6989586621679058250"><span id="local-6989586621679058251"><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058251"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058250"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058251"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058250"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Unit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Unit"><span class="hs-identifier hs-var">Unit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058251"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058250"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-type">Z'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058251"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058250"><span class="hs-identifier hs-type">prec</span></a></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Digit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Digit"><span class="hs-identifier hs-var">Digit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058251"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058250"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Digit"><span class="hs-identifier hs-type">Digit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-type">Z'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058251"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058250"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#precision"><span class="hs-pragma hs-type">precision</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-40"></span><span>  </span><span id="local-6989586621679058235"><span class="annot"><span class="annottext">precision :: Q' p prec -&gt; i
+</span><a href="#local-6989586621679058235"><span class="hs-identifier hs-var hs-var hs-var hs-var">precision</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; i
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; i) -&gt; (Q' p prec -&gt; Integer) -&gt; Q' p prec -&gt; i
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Integer
+forall (n :: Nat) (proxy :: Nat -&gt; *).
+KnownNat n =&gt;
+proxy n -&gt; Integer
+</span><span class="hs-identifier hs-var">natVal</span></span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span>  </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#radix"><span class="hs-pragma hs-type">radix</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-43"></span><span>  </span><span id="local-6989586621679058232"><span class="annot"><span class="annottext">radix :: Q' p prec -&gt; i
+</span><a href="#local-6989586621679058232"><span class="hs-identifier hs-var hs-var hs-var hs-var">radix</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span id="local-6989586621679058231"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058231"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; i
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#radix"><span class="hs-identifier hs-var">radix</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058231"><span class="hs-identifier hs-var">u</span></a></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#digits"><span class="hs-pragma hs-type">digits</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679058229"><span class="annot"><span class="annottext">digits :: Q' p prec -&gt; [Digit (Q' p prec)]
+</span><a href="#local-6989586621679058229"><span class="hs-identifier hs-var hs-var hs-var hs-var">digits</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span id="local-6989586621679058228"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058228"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span id="local-6989586621679058227"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058227"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Mod p -&gt; [Mod p]
+forall a. Int -&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">replicate</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058227"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; [Mod p] -&gt; [Mod p]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Mod p]
+forall (p :: Nat). KnownRadix p =&gt; Integer -&gt; [Mod p]
+</span><a href="Math.NumberTheory.Padic.Analysis.html#toRadix"><span class="hs-identifier hs-var">toRadix</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Z' p prec -&gt; Integer
+forall n. PadicNum n =&gt; n -&gt; Integer
+</span><a href="Math.NumberTheory.Padic.Types.html#lifted"><span class="hs-identifier hs-var">lifted</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058228"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#fromDigits"><span class="hs-pragma hs-type">fromDigits</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621679058222"><span class="annot"><span class="annottext">fromDigits :: [Digit (Q' p prec)] -&gt; Q' p prec
+</span><a href="#local-6989586621679058222"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromDigits</span></a></span></span><span> </span><span id="local-6989586621679058221"><span class="annot"><span class="annottext">[Digit (Q' p prec)]
+</span><a href="#local-6989586621679058221"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(Q' p prec -&gt; Q' p prec) -&gt; Q' p prec -&gt; Q' p prec
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Digit (Z' p prec)] -&gt; Z' p prec
+forall n. PadicNum n =&gt; [Digit n] -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#fromDigits"><span class="hs-identifier hs-var">fromDigits</span></a></span><span> </span><span class="annot"><span class="annottext">[Digit (Z' p prec)]
+[Digit (Q' p prec)]
+</span><a href="#local-6989586621679058221"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#lifted"><span class="hs-pragma hs-type">lifted</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679058219"><span class="annot"><span class="annottext">lifted :: Q' p prec -&gt; Integer
+</span><a href="#local-6989586621679058219"><span class="hs-identifier hs-var hs-var hs-var hs-var">lifted</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span id="local-6989586621679058218"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058218"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Integer
+forall n. PadicNum n =&gt; n -&gt; Integer
+</span><a href="Math.NumberTheory.Padic.Types.html#lifted"><span class="hs-identifier hs-var">lifted</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058218"><span class="hs-identifier hs-var">u</span></a></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#mkUnit"><span class="hs-pragma hs-type">mkUnit</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-55"></span><span>  </span><span id="local-6989586621679058216"><span class="annot"><span class="annottext">mkUnit :: Integer -&gt; Q' p prec
+</span><a href="#local-6989586621679058216"><span class="hs-identifier hs-var hs-var hs-var hs-var">mkUnit</span></a></span></span><span> </span><span id="local-6989586621679058215"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679058215"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(Q' p prec -&gt; Q' p prec) -&gt; Q' p prec -&gt; Q' p prec
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Z' p prec
+forall n. PadicNum n =&gt; Integer -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#mkUnit"><span class="hs-identifier hs-var">mkUnit</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679058215"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#fromUnit"><span class="hs-pragma hs-type">fromUnit</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-58"></span><span>  </span><span id="local-6989586621679058213"><span class="annot"><span class="annottext">fromUnit :: (Unit (Q' p prec), Int) -&gt; Q' p prec
+</span><a href="#local-6989586621679058213"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromUnit</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058212"><span class="annot"><span class="annottext">Unit (Q' p prec)
+</span><a href="#local-6989586621679058212"><span class="hs-identifier hs-var">u</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058211"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058211"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="annot"><span class="annottext">Unit (Q' p prec)
+Z' p prec
+</span><a href="#local-6989586621679058212"><span class="hs-identifier hs-var">u</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058211"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span>  </span><span id="local-6989586621679058210"><span class="annot"><span class="annottext">splitUnit :: Q' p prec -&gt; (Unit (Q' p prec), Int)
+</span><a href="Math.NumberTheory.Padic.Types.html#splitUnit"><span class="hs-identifier hs-var hs-var hs-var hs-var">splitUnit</span></a></span></span><span> </span><span id="local-6989586621679058208"><span class="annot"><span class="annottext">n :: Q' p prec
+</span><a href="#local-6989586621679058208"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span id="local-6989586621679058207"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058207"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span id="local-6989586621679058206"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058206"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-61"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679058205"><span class="annot"><span class="annottext">pr :: Int
+</span><a href="#local-6989586621679058205"><span class="hs-identifier hs-var hs-var">pr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Int
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#precision"><span class="hs-identifier hs-var">precision</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058208"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-62"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679058204"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058204"><span class="hs-identifier hs-var">u'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058203"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058203"><span class="hs-identifier hs-var">v'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; (Unit (Z' p prec), Int)
+forall n. PadicNum n =&gt; n -&gt; (Unit n, Int)
+</span><a href="Math.NumberTheory.Padic.Types.html#splitUnit"><span class="hs-identifier hs-var">splitUnit</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058207"><span class="hs-identifier hs-var">u</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058206"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058203"><span class="hs-identifier hs-var">v'</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058205"><span class="hs-identifier hs-var">pr</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Unit (Q' p prec)
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058205"><span class="hs-identifier hs-var">pr</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">else</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Unit (Q' p prec)
+Z' p prec
+</span><a href="#local-6989586621679058204"><span class="hs-identifier hs-var">u'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058206"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058203"><span class="hs-identifier hs-var">v'</span></a></span><span class="hs-special">)</span><span>     </span><span>
+</span><span id="line-64"></span><span>  </span><span>
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679058200"><span class="annot"><span class="annottext">isInvertible :: Q' p prec -&gt; Bool
+</span><a href="Math.NumberTheory.Padic.Types.html#isInvertible"><span class="hs-identifier hs-var hs-var hs-var hs-var">isInvertible</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Bool
+forall n. PadicNum n =&gt; n -&gt; Bool
+</span><a href="Math.NumberTheory.Padic.Types.html#isInvertible"><span class="hs-identifier hs-var">isInvertible</span></a></span><span> </span><span class="annot"><span class="annottext">(Z' p prec -&gt; Bool)
+-&gt; (Q' p prec -&gt; Z' p prec) -&gt; Q' p prec -&gt; Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Z' p prec
+forall n. PadicNum n =&gt; n -&gt; Unit n
+</span><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">(Q' p prec -&gt; Z' p prec)
+-&gt; (Q' p prec -&gt; Q' p prec) -&gt; Q' p prec -&gt; Z' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span>
+</span><span id="line-66"></span><span>  </span><span>
+</span><span id="line-67"></span><span>  </span><span id="local-6989586621679058197"><span class="annot"><span class="annottext">inverse :: Q' p prec -&gt; Maybe (Q' p prec)
+</span><a href="Math.NumberTheory.Padic.Types.html#inverse"><span class="hs-identifier hs-var hs-var hs-var hs-var">inverse</span></a></span></span><span> </span><span id="local-6989586621679058195"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058195"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span> </span><span id="local-6989586621679058194"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058194"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Maybe (Z' p prec)
+forall n. PadicNum n =&gt; n -&gt; Maybe n
+</span><a href="Math.NumberTheory.Padic.Types.html#inverse"><span class="hs-identifier hs-var">inverse</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Unit (Q' p prec)
+forall n. PadicNum n =&gt; n -&gt; Unit n
+</span><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058195"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-68"></span><span>                 </span><span class="annot"><span class="annottext">Q' p prec -&gt; Maybe (Q' p prec)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Q' p prec -&gt; Maybe (Q' p prec)) -&gt; Q' p prec -&gt; Maybe (Q' p prec)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Unit (Q' p prec), Int) -&gt; Q' p prec
+forall n. PadicNum n =&gt; (Unit n, Int) -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#fromUnit"><span class="hs-identifier hs-var">fromUnit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Unit (Q' p prec)
+Z' p prec
+</span><a href="#local-6989586621679058194"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">-</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Int
+forall n. PadicNum n =&gt; n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var">valuation</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058195"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span id="local-6989586621679058191"><span id="local-6989586621679058192"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679058186"><span id="local-6989586621679058189"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058192"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058191"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058192"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058191"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-71"></span><span>  </span><span id="local-6989586621679058184"><span class="annot"><span class="annottext">show :: Q' p prec -&gt; String
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span id="local-6989586621679058182"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058182"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058181"><span class="hs-identifier hs-var">si</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058180"><span class="hs-identifier hs-var">sep</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;.&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058180"><span class="hs-identifier hs-var">sep</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058179"><span class="hs-identifier hs-var">sf</span></a></span><span>
+</span><span id="line-72"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-73"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679058178"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058178"><span class="hs-identifier hs-var">u</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058177"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058177"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; (Unit (Q' p prec), Int)
+forall n. PadicNum n =&gt; n -&gt; (Unit n, Int)
+</span><a href="Math.NumberTheory.Padic.Types.html#splitUnit"><span class="hs-identifier hs-var">splitUnit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058182"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-74"></span><span>      </span><span id="local-6989586621679058176"><span class="annot"><span class="annottext">pr :: Int
+</span><a href="#local-6989586621679058176"><span class="hs-identifier hs-var hs-var">pr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Int
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#precision"><span class="hs-identifier hs-var">precision</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058182"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span>
+</span><span id="line-75"></span><span>      </span><span id="local-6989586621679058175"><span class="annot"><span class="annottext">ds :: [Digit (Z' p prec)]
+</span><a href="#local-6989586621679058175"><span class="hs-identifier hs-var hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; [Digit (Z' p prec)]
+forall n. PadicNum n =&gt; n -&gt; [Digit n]
+</span><a href="Math.NumberTheory.Padic.Types.html#digits"><span class="hs-identifier hs-var">digits</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058178"><span class="hs-identifier hs-var">u</span></a></span><span>
+</span><span id="line-76"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679058174"><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058174"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058173"><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058173"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-77"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Ordering
+forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
+</span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058177"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-78"></span><span>          </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">EQ</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Mod p]
+[Digit (Z' p prec)]
+</span><a href="#local-6989586621679058175"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>          </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">GT</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Mod p -&gt; [Mod p]
+forall a. Int -&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">replicate</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058177"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; [Mod p] -&gt; [Mod p]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+[Digit (Z' p prec)]
+</span><a href="#local-6989586621679058175"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>          </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">LT</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Mod p] -&gt; ([Mod p], [Mod p])
+forall a. Int -&gt; [a] -&gt; ([a], [a])
+</span><span class="hs-identifier hs-var">splitAt</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058177"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Mod p]
+[Digit (Z' p prec)]
+</span><a href="#local-6989586621679058175"><span class="hs-identifier hs-var">ds</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; [Mod p] -&gt; [Mod p]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Mod p -&gt; [Mod p]
+forall a. Int -&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">replicate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058176"><span class="hs-identifier hs-var">pr</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058177"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-81"></span><span>      </span><span id="local-6989586621679058179"><span class="annot"><span class="annottext">sf :: String
+</span><a href="#local-6989586621679058179"><span class="hs-identifier hs-var hs-var">sf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; String
+forall a. [a] -&gt; [[a]] -&gt; [a]
+</span><span class="hs-identifier hs-var">intercalate</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058180"><span class="hs-identifier hs-var">sep</span></a></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; String) -&gt; [String] -&gt; String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; String
+forall (m :: Nat). Mod m -&gt; String
+</span><a href="#local-6989586621679058170"><span class="hs-identifier hs-var">showD</span></a></span><span> </span><span class="annot"><span class="annottext">(Mod p -&gt; String) -&gt; [Mod p] -&gt; [String]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; [Mod p]
+forall a. [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">reverse</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058174"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-82"></span><span>      </span><span id="local-6989586621679058181"><span class="annot"><span class="annottext">si :: String
+</span><a href="#local-6989586621679058181"><span class="hs-identifier hs-var hs-var">si</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-83"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Mod p] -&gt; Maybe ([Mod p], [Mod p])
+forall a. Eq a =&gt; Int -&gt; [a] -&gt; Maybe ([a], [a])
+</span><a href="Math.NumberTheory.Padic.Analysis.html#findCycle"><span class="hs-identifier hs-var">findCycle</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058176"><span class="hs-identifier hs-var">pr</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058173"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-84"></span><span>          </span><span class="annot"><span class="annottext">Maybe ([Mod p], [Mod p])
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-85"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; Bool
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
+</span><span class="hs-identifier hs-var">null</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058173"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;0&quot;</span></span><span>
+</span><span id="line-86"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058173"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058176"><span class="hs-identifier hs-var">pr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058164"><span class="hs-identifier hs-var">ell</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; String
+</span><a href="#local-6989586621679058163"><span class="hs-identifier hs-var">toString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [Mod p] -&gt; [Mod p]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058176"><span class="hs-identifier hs-var">pr</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058173"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-87"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; String
+</span><a href="#local-6989586621679058163"><span class="hs-identifier hs-var">toString</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058173"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-88"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;0&quot;</span></span><span>
+</span><span id="line-89"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058161"><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058161"><span class="hs-identifier hs-var">pref</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; String
+</span><a href="#local-6989586621679058163"><span class="hs-identifier hs-var">toString</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058161"><span class="hs-identifier hs-var">pref</span></a></span><span>
+</span><span id="line-90"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679058160"><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058160"><span class="hs-identifier hs-var">pref</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058159"><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058159"><span class="hs-identifier hs-var">cyc</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058160"><span class="hs-identifier hs-var">pref</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058159"><span class="hs-identifier hs-var">cyc</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058176"><span class="hs-identifier hs-var">pr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-92"></span><span>              </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679058157"><span class="annot"><span class="annottext">sp :: String
+</span><a href="#local-6989586621679058157"><span class="hs-identifier hs-var hs-var">sp</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; String
+</span><a href="#local-6989586621679058163"><span class="hs-identifier hs-var">toString</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058160"><span class="hs-identifier hs-var">pref</span></a></span><span>
+</span><span id="line-93"></span><span>                  </span><span id="local-6989586621679058156"><span class="annot"><span class="annottext">sc :: String
+</span><a href="#local-6989586621679058156"><span class="hs-identifier hs-var hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; String
+</span><a href="#local-6989586621679058163"><span class="hs-identifier hs-var">toString</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058159"><span class="hs-identifier hs-var">cyc</span></a></span><span>
+</span><span id="line-94"></span><span>               </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;(&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058156"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;)&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058180"><span class="hs-identifier hs-var">sep</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058157"><span class="hs-identifier hs-var">sp</span></a></span><span>
+</span><span id="line-95"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058164"><span class="hs-identifier hs-var">ell</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; String
+</span><a href="#local-6989586621679058163"><span class="hs-identifier hs-var">toString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [Mod p] -&gt; [Mod p]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058176"><span class="hs-identifier hs-var">pr</span></a></span><span> </span><span class="annot"><span class="annottext">([Mod p] -&gt; [Mod p]) -&gt; [Mod p] -&gt; [Mod p]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058160"><span class="hs-identifier hs-var">pref</span></a></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; [Mod p] -&gt; [Mod p]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[Mod p]
+</span><a href="#local-6989586621679058159"><span class="hs-identifier hs-var">cyc</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-96"></span><span>      </span><span id="local-6989586621679058170"><span class="annot"><span class="annottext">showD :: Mod m -&gt; String
+</span><a href="#local-6989586621679058170"><span class="hs-identifier hs-var hs-var">showD</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Natural -&gt; String) -&gt; (Mod m -&gt; Natural) -&gt; Mod m -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Mod m -&gt; Natural
+forall (m :: Nat). Mod m -&gt; Natural
+</span><span class="hs-identifier hs-var hs-var">unMod</span></span><span>
+</span><span id="line-97"></span><span>      </span><span id="local-6989586621679058163"><span class="annot"><span class="annottext">toString :: [Mod p] -&gt; String
+</span><a href="#local-6989586621679058163"><span class="hs-identifier hs-var hs-var">toString</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; String
+forall a. [a] -&gt; [[a]] -&gt; [a]
+</span><span class="hs-identifier hs-var">intercalate</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058180"><span class="hs-identifier hs-var">sep</span></a></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; String) -&gt; ([Mod p] -&gt; [String]) -&gt; [Mod p] -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Mod p -&gt; String) -&gt; [Mod p] -&gt; [String]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; String
+forall (m :: Nat). Mod m -&gt; String
+</span><a href="#local-6989586621679058170"><span class="hs-identifier hs-var">showD</span></a></span><span> </span><span class="annot"><span class="annottext">([Mod p] -&gt; [String])
+-&gt; ([Mod p] -&gt; [Mod p]) -&gt; [Mod p] -&gt; [String]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Mod p] -&gt; [Mod p]
+forall a. [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">reverse</span></span><span>
+</span><span id="line-98"></span><span>      </span><span id="local-6989586621679058164"><span class="annot"><span class="annottext">ell :: String
+</span><a href="#local-6989586621679058164"><span class="hs-identifier hs-var hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&#8230;&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058180"><span class="hs-identifier hs-var">sep</span></a></span><span>
+</span><span id="line-99"></span><span>      </span><span id="local-6989586621679058180"><span class="annot"><span class="annottext">sep :: String
+</span><a href="#local-6989586621679058180"><span class="hs-identifier hs-var hs-var">sep</span></a></span></span><span>
+</span><span id="line-100"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Integer
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#radix"><span class="hs-identifier hs-var">radix</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058182"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">11</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;&quot;</span></span><span>
+</span><span id="line-101"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; &quot;</span></span></span></span><span>
+</span><span id="line-102"></span><span>    </span><span>
+</span><span id="line-103"></span><span id="local-6989586621679058152"><span id="local-6989586621679058153"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679058149"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058153"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058152"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058153"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058152"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-104"></span><span>  </span><span id="local-6989586621679058147"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058147"><span class="hs-identifier hs-var">a'</span></a></span></span><span> </span><span id="local-6989586621679058146"><span class="annot"><span class="annottext">== :: Q' p prec -&gt; Q' p prec -&gt; Bool
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span id="local-6989586621679058145"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058145"><span class="hs-identifier hs-var">b'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-105"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Bool
+forall n. PadicNum n =&gt; n -&gt; Bool
+</span><a href="Math.NumberTheory.Padic.Types.html#isZero"><span class="hs-identifier hs-var">isZero</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058143"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Bool
+forall n. PadicNum n =&gt; n -&gt; Bool
+</span><a href="Math.NumberTheory.Padic.Types.html#isZero"><span class="hs-identifier hs-var">isZero</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058141"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>    </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">||</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Int
+forall n. PadicNum n =&gt; n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var">valuation</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058143"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Int
+forall n. PadicNum n =&gt; n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var">valuation</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058141"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Unit (Q' p prec)
+forall n. PadicNum n =&gt; n -&gt; Unit n
+</span><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058143"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Z' p prec -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Unit (Q' p prec)
+forall n. PadicNum n =&gt; n -&gt; Unit n
+</span><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058141"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-108"></span><span>      </span><span id="local-6989586621679058143"><span class="annot"><span class="annottext">a :: Q' p prec
+</span><a href="#local-6989586621679058143"><span class="hs-identifier hs-var hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058147"><span class="hs-identifier hs-var">a'</span></a></span><span>
+</span><span id="line-109"></span><span>      </span><span id="local-6989586621679058141"><span class="annot"><span class="annottext">b :: Q' p prec
+</span><a href="#local-6989586621679058141"><span class="hs-identifier hs-var hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058145"><span class="hs-identifier hs-var">b'</span></a></span></span></span><span>
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span id="local-6989586621679058138"><span id="local-6989586621679058139"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679058124"><span id="local-6989586621679058126"><span id="local-6989586621679058128"><span id="local-6989586621679058130"><span id="local-6989586621679058132"><span id="local-6989586621679058134"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058139"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058138"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058139"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058138"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-112"></span><span>  </span><span id="local-6989586621679058122"><span class="annot"><span class="annottext">compare :: Q' p prec -&gt; Q' p prec -&gt; Ordering
+</span><a href="#local-6989586621679058122"><span class="hs-identifier hs-var hs-var hs-var hs-var">compare</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q' p prec -&gt; Q' p prec -&gt; Ordering
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Order is nor defined for p-adics.&quot;</span></span></span></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span id="local-6989586621679058119"><span id="local-6989586621679058120"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679058116"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058120"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058119"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058120"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058119"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-115"></span><span>  </span><span id="local-6989586621679058109"><span class="annot"><span class="annottext">fromInteger :: Integer -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromInteger</span></span></span><span> </span><span id="local-6989586621679058108"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679058108"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">(Q' p prec -&gt; Q' p prec) -&gt; Q' p prec -&gt; Q' p prec
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Z' p prec
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679058108"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-116"></span><span>          </span><span>
+</span><span id="line-117"></span><span>  </span><span id="local-6989586621679058107"><span class="annot"><span class="annottext">x :: Q' p prec
+</span><a href="#local-6989586621679058107"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-type">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-type">R</span></a></span><span> </span><span id="local-6989586621679058104"><span class="annot"><span class="annottext">Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058104"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058103"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058103"><span class="hs-identifier hs-var">va</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058102"><span class="annot"><span class="annottext">+ :: Q' p prec -&gt; Q' p prec -&gt; Q' p prec
+</span><a href="#local-6989586621679058102"><span class="hs-operator hs-var hs-var hs-var hs-var">+</span></a></span></span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-type">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-type">R</span></a></span><span> </span><span id="local-6989586621679058101"><span class="annot"><span class="annottext">Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058101"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058100"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058100"><span class="hs-identifier hs-var">vb</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-118"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Ordering
+forall a. Ord a =&gt; a -&gt; a -&gt; Ordering
+</span><span class="hs-identifier hs-var">compare</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058103"><span class="hs-identifier hs-var">va</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058100"><span class="hs-identifier hs-var">vb</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-119"></span><span>      </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">LT</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">R prec p -&gt; Z' p prec
+forall (p :: Nat) (prec :: Nat). R prec p -&gt; Z' p prec
+</span><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-var">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (LiftedRadix p prec) -&gt; R prec p
+forall (prec :: Nat) (p :: Nat).
+Mod (LiftedRadix p prec) -&gt; R prec p
+</span><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-var">R</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058104"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+-&gt; Mod (p ^ ((2 * prec) + 1)) -&gt; Mod (p ^ ((2 * prec) + 1))
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+</span><a href="#local-6989586621679058099"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1)) -&gt; Int -&gt; Mod (p ^ ((2 * prec) + 1))
+forall (m :: Nat) a.
+(KnownNat m, Integral a) =&gt;
+Mod m -&gt; a -&gt; Mod m
+</span><span class="hs-operator hs-var">^%</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058100"><span class="hs-identifier hs-var">vb</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058103"><span class="hs-identifier hs-var">va</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+-&gt; Mod (p ^ ((2 * prec) + 1)) -&gt; Mod (p ^ ((2 * prec) + 1))
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058101"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058103"><span class="hs-identifier hs-var">va</span></a></span><span>
+</span><span id="line-120"></span><span>      </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">EQ</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">R prec p -&gt; Z' p prec
+forall (p :: Nat) (prec :: Nat). R prec p -&gt; Z' p prec
+</span><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-var">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (LiftedRadix p prec) -&gt; R prec p
+forall (prec :: Nat) (p :: Nat).
+Mod (LiftedRadix p prec) -&gt; R prec p
+</span><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-var">R</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058104"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+-&gt; Mod (p ^ ((2 * prec) + 1)) -&gt; Mod (p ^ ((2 * prec) + 1))
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058101"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058103"><span class="hs-identifier hs-var">va</span></a></span><span>
+</span><span id="line-121"></span><span>      </span><span class="annot"><span class="annottext">Ordering
+</span><span class="hs-identifier hs-var">GT</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">R prec p -&gt; Z' p prec
+forall (p :: Nat) (prec :: Nat). R prec p -&gt; Z' p prec
+</span><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-var">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (LiftedRadix p prec) -&gt; R prec p
+forall (prec :: Nat) (p :: Nat).
+Mod (LiftedRadix p prec) -&gt; R prec p
+</span><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-var">R</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+</span><a href="#local-6989586621679058099"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1)) -&gt; Int -&gt; Mod (p ^ ((2 * prec) + 1))
+forall (m :: Nat) a.
+(KnownNat m, Integral a) =&gt;
+Mod m -&gt; a -&gt; Mod m
+</span><span class="hs-operator hs-var">^%</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058103"><span class="hs-identifier hs-var">va</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058100"><span class="hs-identifier hs-var">vb</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+-&gt; Mod (p ^ ((2 * prec) + 1)) -&gt; Mod (p ^ ((2 * prec) + 1))
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058104"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+-&gt; Mod (p ^ ((2 * prec) + 1)) -&gt; Mod (p ^ ((2 * prec) + 1))
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058101"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058100"><span class="hs-identifier hs-var">vb</span></a></span><span>
+</span><span id="line-122"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-123"></span><span>      </span><span id="local-6989586621679058099"><span class="annot"><span class="annottext">p :: Mod (p ^ ((2 * prec) + 1))
+</span><a href="#local-6989586621679058099"><span class="hs-identifier hs-var hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Mod (p ^ ((2 * prec) + 1))
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Integer
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#radix"><span class="hs-identifier hs-var">radix</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058107"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-124"></span><span>      </span><span>
+</span><span id="line-125"></span><span>  </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-type">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-type">R</span></a></span><span> </span><span id="local-6989586621679058096"><span class="annot"><span class="annottext">Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058096"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058095"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058095"><span class="hs-identifier hs-var">va</span></a></span></span><span> </span><span id="local-6989586621679058094"><span class="annot"><span class="annottext">* :: Q' p prec -&gt; Q' p prec -&gt; Q' p prec
+</span><a href="#local-6989586621679058094"><span class="hs-operator hs-var hs-var hs-var hs-var">*</span></a></span></span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-type">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-type">R</span></a></span><span> </span><span id="local-6989586621679058093"><span class="annot"><span class="annottext">Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058093"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679058092"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058092"><span class="hs-identifier hs-var">vb</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">R prec p -&gt; Z' p prec
+forall (p :: Nat) (prec :: Nat). R prec p -&gt; Z' p prec
+</span><a href="Math.NumberTheory.Padic.Integer.html#Z%27"><span class="hs-identifier hs-var">Z'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (LiftedRadix p prec) -&gt; R prec p
+forall (prec :: Nat) (p :: Nat).
+Mod (LiftedRadix p prec) -&gt; R prec p
+</span><a href="Math.NumberTheory.Padic.Integer.html#R"><span class="hs-identifier hs-var">R</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058096"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+-&gt; Mod (p ^ ((2 * prec) + 1)) -&gt; Mod (p ^ ((2 * prec) + 1))
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Mod (p ^ ((2 * prec) + 1))
+Mod (LiftedRadix p prec)
+</span><a href="#local-6989586621679058093"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058095"><span class="hs-identifier hs-var">va</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058092"><span class="hs-identifier hs-var">vb</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-126"></span><span>      </span><span>
+</span><span id="line-127"></span><span>  </span><span id="local-6989586621679058091"><span class="annot"><span class="annottext">negate :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">negate</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span id="local-6989586621679058090"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058090"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span id="local-6989586621679058089"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058089"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Z' p prec -&gt; Z' p prec
+forall a. Num a =&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">negate</span></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058090"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058089"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-128"></span><span>  </span><span id="local-6989586621679058088"><span class="annot"><span class="annottext">abs :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">abs</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Rational -&gt; Q' p prec
+forall a. Fractional a =&gt; Rational -&gt; a
+</span><span class="hs-identifier hs-var">fromRational</span></span><span> </span><span class="annot"><span class="annottext">(Rational -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Rational) -&gt; Q' p prec -&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Rational
+forall i n. (Integral i, PadicNum n) =&gt; n -&gt; Ratio i
+</span><a href="Math.NumberTheory.Padic.Types.html#norm"><span class="hs-identifier hs-var">norm</span></a></span><span>
+</span><span id="line-129"></span><span>  </span><span id="local-6989586621679058085"><span class="annot"><span class="annottext">signum :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">signum</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n (p :: Nat).
+(PadicNum n, KnownRadix p, Digit n ~ Mod p) =&gt;
+n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pSignum"><span class="hs-identifier hs-var">pSignum</span></a></span></span></span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="hs-keyword">newtype</span><span> </span><span id="Delay"><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Delay"><span class="hs-identifier hs-var">Delay</span></a></span></span><span> </span><span id="local-6989586621679058288"><span class="annot"><a href="#local-6989586621679058288"><span class="hs-identifier hs-type">prec</span></a></span></span><span> </span><span id="local-6989586621679058289"><span class="annot"><a href="#local-6989586621679058289"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Delay"><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Delay"><span class="hs-identifier hs-var">Delay</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058289"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058288"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-132"></span><span>
+</span><span id="line-133"></span><span id="local-6989586621679058080"><span id="local-6989586621679058081"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679058076"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058081"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058080"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Fractional</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058081"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058080"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-134"></span><span>  </span><span id="local-6989586621679058073"><span class="annot"><span class="annottext">fromRational :: Rational -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromRational</span></span></span><span> </span><span class="annot"><span class="annottext">Rational
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-135"></span><span>  </span><span class="annot"><span class="hs-identifier hs-var">fromRational</span></span><span> </span><span id="local-6989586621679058072"><span class="annot"><span class="annottext">Rational
+</span><a href="#local-6989586621679058072"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058071"><span class="hs-identifier hs-var">res</span></a></span><span>
+</span><span id="line-136"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-137"></span><span>      </span><span id="local-6989586621679058071"><span class="annot"><span class="annottext">res :: Q' p prec
+</span><a href="#local-6989586621679058071"><span class="hs-identifier hs-var hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058070"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Z' p prec -&gt; Z' p prec
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058068"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058067"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-138"></span><span>      </span><span id="local-6989586621679058066"><span class="annot"><span class="annottext">p :: Integer
+</span><a href="#local-6989586621679058066"><span class="hs-identifier hs-var hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer) -&gt; Integer -&gt; Integer
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Delay prec p -&gt; Integer
+forall (n :: Nat) (proxy :: Nat -&gt; *).
+KnownNat n =&gt;
+proxy n -&gt; Integer
+</span><span class="hs-identifier hs-var">natVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Delay prec p
+forall (prec :: Nat) (p :: Nat). Q' p prec -&gt; Delay prec p
+</span><a href="Math.NumberTheory.Padic.Rational.html#Delay"><span class="hs-identifier hs-var">Delay</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058071"><span class="hs-identifier hs-var">res</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679058065"><span class="annot"><span class="annottext">Rational
+</span><a href="#local-6989586621679058065"><span class="hs-identifier hs-var">q</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058067"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058067"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Rational -&gt; (Rational, Int)
+forall p. Integral p =&gt; p -&gt; Ratio p -&gt; (Ratio p, Int)
+</span><a href="Math.NumberTheory.Padic.Analysis.html#getUnitQ"><span class="hs-identifier hs-var">getUnitQ</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679058066"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Rational
+</span><a href="#local-6989586621679058072"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-140"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679058070"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058070"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679058068"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058068"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Z' p prec
+forall n. PadicNum n =&gt; Integer -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#mkUnit"><span class="hs-identifier hs-var">mkUnit</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Z' p prec) -&gt; Integer -&gt; Z' p prec
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Rational -&gt; Integer
+forall a. Ratio a -&gt; a
+</span><span class="hs-identifier hs-var">numerator</span></span><span> </span><span class="annot"><span class="annottext">Rational
+</span><a href="#local-6989586621679058065"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Z' p prec
+forall n. PadicNum n =&gt; Integer -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#mkUnit"><span class="hs-identifier hs-var">mkUnit</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Z' p prec) -&gt; Integer -&gt; Z' p prec
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Rational -&gt; Integer
+forall a. Ratio a -&gt; a
+</span><span class="hs-identifier hs-var">denominator</span></span><span> </span><span class="annot"><span class="annottext">Rational
+</span><a href="#local-6989586621679058065"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-141"></span><span>  </span><span id="local-6989586621679058061"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058061"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679058060"><span class="annot"><span class="annottext">/ :: Q' p prec -&gt; Q' p prec -&gt; Q' p prec
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">/</span></span></span><span> </span><span id="local-6989586621679058058"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058058"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Int -&gt; Q' p prec
+forall (p :: Nat) (prec :: Nat). Z' p prec -&gt; Int -&gt; Q' p prec
+</span><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-var">Q'</span></a></span><span> </span><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058057"><span class="hs-identifier hs-var">u</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058056"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Int
+forall n. PadicNum n =&gt; n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var">valuation</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058061"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Int
+forall n. PadicNum n =&gt; n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var">valuation</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058055"><span class="hs-identifier hs-var">b'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-142"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-143"></span><span>      </span><span id="local-6989586621679058055"><span class="annot"><span class="annottext">b' :: Q' p prec
+</span><a href="#local-6989586621679058055"><span class="hs-identifier hs-var hs-var">b'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec
+forall n. PadicNum n =&gt; n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var">normalize</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058058"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-144"></span><span>      </span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span id="local-6989586621679058057"><span class="annot"><span class="annottext">Z' p prec
+</span><a href="#local-6989586621679058057"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span id="local-6989586621679058056"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679058056"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Rational -&gt; Q' p prec
+forall a. Fractional a =&gt; Rational -&gt; a
+</span><span class="hs-identifier hs-var">fromRational</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Integer
+forall n. PadicNum n =&gt; n -&gt; Integer
+</span><a href="Math.NumberTheory.Padic.Types.html#lifted"><span class="hs-identifier hs-var">lifted</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058061"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Rational
+forall a. Integral a =&gt; a -&gt; a -&gt; Ratio a
+</span><span class="hs-operator hs-var">%</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Integer
+forall n. PadicNum n =&gt; n -&gt; Integer
+</span><a href="Math.NumberTheory.Padic.Types.html#lifted"><span class="hs-identifier hs-var">lifted</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058055"><span class="hs-identifier hs-var">b'</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-145"></span><span>
+</span><span id="line-146"></span><span id="local-6989586621679058052"><span id="local-6989586621679058053"><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058053"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058052"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Real</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058053"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058052"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-147"></span><span>  </span><span id="local-6989586621679058047"><span class="annot"><span class="annottext">toRational :: Q' p prec -&gt; Rational
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toRational</span></span></span><span> </span><span id="local-6989586621679058046"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058046"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Z' p prec -&gt; Rational
+forall a. Real a =&gt; a -&gt; Rational
+</span><span class="hs-identifier hs-var">toRational</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Unit (Q' p prec)
+forall n. PadicNum n =&gt; n -&gt; Unit n
+</span><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058046"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Rational -&gt; Rational -&gt; Rational
+forall a. Fractional a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">/</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Rational
+forall i n. (Integral i, PadicNum n) =&gt; n -&gt; Ratio i
+</span><a href="Math.NumberTheory.Padic.Types.html#norm"><span class="hs-identifier hs-var">norm</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058046"><span class="hs-identifier hs-var">n</span></a></span></span></span><span>
+</span><span id="line-148"></span><span>
+</span><span id="line-149"></span><span id="pUndefinedError"><span class="annot"><span class="annottext">pUndefinedError :: String -&gt; a
+</span><a href="Math.NumberTheory.Padic.Rational.html#pUndefinedError"><span class="hs-identifier hs-var hs-var">pUndefinedError</span></a></span></span><span> </span><span id="local-6989586621679058044"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058044"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; a
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; a) -&gt; String -&gt; a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679058044"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; is undifined for p-adics.&quot;</span></span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span id="fromEither"><span class="annot"><span class="annottext">fromEither :: Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var hs-var">fromEither</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; c) -&gt; (c -&gt; c) -&gt; Either String c -&gt; c
+forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; c
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">c -&gt; c
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-152"></span><span>
+</span><span id="line-153"></span><span id="local-6989586621679058039"><span id="local-6989586621679058040"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679058009"><span id="local-6989586621679058011"><span id="local-6989586621679058013"><span id="local-6989586621679058015"><span id="local-6989586621679058020"><span id="local-6989586621679058027"><span id="local-6989586621679058031"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-type">Radix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058040"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058039"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Floating</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Rational.html#Q%27"><span class="hs-identifier hs-type">Q'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058040"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679058039"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-154"></span><span>  </span><span id="local-6989586621679058007"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058007"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679058006"><span class="annot"><span class="annottext">** :: Q' p prec -&gt; Q' p prec -&gt; Q' p prec
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">**</span></span></span><span> </span><span id="local-6989586621679058004"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058004"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; Either String (Q' p prec) -&gt; Q' p prec
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Q' p prec -&gt; Either String (Q' p prec)
+forall p. (PadicNum p, Fractional p) =&gt; p -&gt; p -&gt; Either String p
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pPow"><span class="hs-identifier hs-var">pPow</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058007"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679058004"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-155"></span><span>  </span><span id="local-6989586621679058002"><span class="annot"><span class="annottext">exp :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">exp</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall n. (Eq n, PadicNum n, Fractional n) =&gt; n -&gt; Either String n
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pExp"><span class="hs-identifier hs-var">pExp</span></a></span><span>
+</span><span id="line-156"></span><span>  </span><span id="local-6989586621679057999"><span class="annot"><span class="annottext">log :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">log</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall n. (Eq n, PadicNum n, Fractional n) =&gt; n -&gt; Either String n
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pLog"><span class="hs-identifier hs-var">pLog</span></a></span><span>
+</span><span id="line-157"></span><span>  </span><span id="local-6989586621679057996"><span class="annot"><span class="annottext">sinh :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">sinh</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (PadicNum b, Fractional b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pSinh"><span class="hs-identifier hs-var">pSinh</span></a></span><span>
+</span><span id="line-158"></span><span>  </span><span id="local-6989586621679057993"><span class="annot"><span class="annottext">cosh :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">cosh</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (PadicNum b, Fractional b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pCosh"><span class="hs-identifier hs-var">pCosh</span></a></span><span>
+</span><span id="line-159"></span><span>  </span><span id="local-6989586621679057990"><span class="annot"><span class="annottext">sin :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">sin</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (PadicNum b, Fractional b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pSin"><span class="hs-identifier hs-var">pSin</span></a></span><span>
+</span><span id="line-160"></span><span>  </span><span id="local-6989586621679057987"><span class="annot"><span class="annottext">cos :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">cos</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (PadicNum b, Fractional b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pCos"><span class="hs-identifier hs-var">pCos</span></a></span><span>
+</span><span id="line-161"></span><span>  </span><span id="local-6989586621679057984"><span class="annot"><span class="annottext">asinh :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">asinh</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (PadicNum b, Fractional b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pAsinh"><span class="hs-identifier hs-var">pAsinh</span></a></span><span>
+</span><span id="line-162"></span><span>  </span><span id="local-6989586621679057981"><span class="annot"><span class="annottext">acosh :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">acosh</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (PadicNum b, Fractional b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pCosh"><span class="hs-identifier hs-var">pCosh</span></a></span><span>
+</span><span id="line-163"></span><span>  </span><span id="local-6989586621679057979"><span class="annot"><span class="annottext">atanh :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">atanh</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (Fractional b, PadicNum b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pTanh"><span class="hs-identifier hs-var">pTanh</span></a></span><span>
+</span><span id="line-164"></span><span>  </span><span id="local-6989586621679057976"><span class="annot"><span class="annottext">asin :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">asin</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either String (Q' p prec) -&gt; Q' p prec
+forall c. Either String c -&gt; c
+</span><a href="Math.NumberTheory.Padic.Rational.html#fromEither"><span class="hs-identifier hs-var">fromEither</span></a></span><span> </span><span class="annot"><span class="annottext">(Either String (Q' p prec) -&gt; Q' p prec)
+-&gt; (Q' p prec -&gt; Either String (Q' p prec))
+-&gt; Q' p prec
+-&gt; Q' p prec
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; Either String (Q' p prec)
+forall b. (Fractional b, PadicNum b) =&gt; b -&gt; Either String b
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pAsin"><span class="hs-identifier hs-var">pAsin</span></a></span><span>
+</span><span id="line-165"></span><span>  </span><span id="local-6989586621679057973"><span class="annot"><span class="annottext">sqrt :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">sqrt</span></span></span><span> </span><span id="local-6989586621679057971"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679057971"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Q' p prec -&gt; [Q' p prec]
+forall n (p :: Nat).
+(Fractional n, PadicNum n, KnownRadix p, Digit n ~ Mod p) =&gt;
+n -&gt; [n]
+</span><a href="Math.NumberTheory.Padic.Analysis.html#pSqrt"><span class="hs-identifier hs-var">pSqrt</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679057971"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-166"></span><span>    </span><span id="local-6989586621679057969"><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679057969"><span class="hs-identifier hs-var">res</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span class="annot"><span class="annottext">[Q' p prec]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679057969"><span class="hs-identifier hs-var">res</span></a></span><span>
+</span><span id="line-167"></span><span>    </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q' p prec
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Q' p prec) -&gt; String -&gt; Q' p prec
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;sqrt: digit &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q' p prec -&gt; Digit (Q' p prec)
+forall n. PadicNum n =&gt; n -&gt; Digit n
+</span><a href="Math.NumberTheory.Padic.Types.html#firstDigit"><span class="hs-identifier hs-var">firstDigit</span></a></span><span> </span><span class="annot"><span class="annottext">Q' p prec
+</span><a href="#local-6989586621679057971"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot; is not a square residue!&quot;</span></span><span>
+</span><span id="line-168"></span><span>  </span><span id="local-6989586621679057967"><span class="annot"><span class="annottext">pi :: Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pi</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q' p prec
+forall a. String -&gt; a
+</span><a href="Math.NumberTheory.Padic.Rational.html#pUndefinedError"><span class="hs-identifier hs-var">pUndefinedError</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;pi&quot;</span></span><span>
+</span><span id="line-169"></span><span>  </span><span id="local-6989586621679057965"><span class="annot"><span class="annottext">acos :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">acos</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q' p prec -&gt; Q' p prec
+forall a. String -&gt; a
+</span><a href="Math.NumberTheory.Padic.Rational.html#pUndefinedError"><span class="hs-identifier hs-var">pUndefinedError</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;acos&quot;</span></span><span>
+</span><span id="line-170"></span><span>  </span><span id="local-6989586621679057963"><span class="annot"><span class="annottext">atan :: Q' p prec -&gt; Q' p prec
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">atan</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q' p prec -&gt; Q' p prec
+forall a. String -&gt; a
+</span><a href="Math.NumberTheory.Padic.Rational.html#pUndefinedError"><span class="hs-identifier hs-var">pUndefinedError</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;atan&quot;</span></span></span></span><span>
+</span><span id="line-171"></span><span>
+</span><span id="line-172"></span></pre></body></html>

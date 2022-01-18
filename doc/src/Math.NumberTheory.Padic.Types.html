@@ -1,0 +1,439 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_HADDOCK hide, prune, ignore-exports #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ConstraintKinds #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE UndecidableSuperClasses #-}</span><span>
+</span><span id="line-6"></span><span class="hs-pragma">{-# LANGUAGE DataKinds #-}</span><span>
+</span><span id="line-7"></span><span class="hs-pragma">{-# LANGUAGE TypeFamilies #-}</span><span>
+</span><span id="line-8"></span><span class="hs-pragma">{-# LANGUAGE TypeOperators #-}</span><span>
+</span><span id="line-9"></span><span class="hs-pragma">{-# LANGUAGE MagicHash #-}</span><span>
+</span><span id="line-10"></span><span class="hs-pragma">{-# LANGUAGE NoStarIsType #-}</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Math.NumberTheory.Padic.Types</span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Ratio</span></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isJust</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">maybeToList</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Mod</span></span><span>  </span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Word</span></span><span>  </span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.TypeLits</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Mod</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Constraint</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Constraint</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Integer</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">smallInteger</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Integer.Logarithms</span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">integerLogBase#</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-comment">------------------------------------------------------------</span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- | Constraint for non-zero natural number which can be a radix.</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="ValidRadix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#ValidRadix"><span class="hs-identifier hs-var">ValidRadix</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679057169"><span class="annot"><a href="#local-6989586621679057169"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Constraint</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-26"></span><span>  </span><span id="ValidRadix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#ValidRadix"><span class="hs-identifier hs-var">ValidRadix</span></a></span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TypeError</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Zero radix!&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span id="ValidRadix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#ValidRadix"><span class="hs-identifier hs-var">ValidRadix</span></a></span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TypeError</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Radix should be more then 1!&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span id="ValidRadix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#ValidRadix"><span class="hs-identifier hs-var">ValidRadix</span></a></span></span><span> </span><span id="local-6989586621679057168"><span class="annot"><a href="#local-6989586621679057168"><span class="hs-identifier hs-type hs-type">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- | Constraint for valid radix of a number</span><span>
+</span><span id="line-31"></span><span class="hs-keyword">type</span><span> </span><span id="KnownRadix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#KnownRadix"><span class="hs-identifier hs-var">KnownRadix</span></a></span></span><span> </span><span id="local-6989586621679057167"><span class="annot"><a href="#local-6989586621679057167"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#ValidRadix"><span class="hs-identifier hs-type">ValidRadix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057167"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679057167"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>  </span><span>
+</span><span id="line-33"></span><span class="hs-comment">-- | Radix of the internal representation of integer p-adic number.</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="LiftedRadix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#LiftedRadix"><span class="hs-identifier hs-var">LiftedRadix</span></a></span></span><span> </span><span id="local-6989586621679057165"><span class="annot"><a href="#local-6989586621679057165"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679057164"><span class="annot"><a href="#local-6989586621679057164"><span class="hs-identifier hs-type">prec</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-35"></span><span>  </span><span id="LiftedRadix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#LiftedRadix"><span class="hs-identifier hs-var">LiftedRadix</span></a></span></span><span> </span><span id="local-6989586621679057163"><span class="annot"><a href="#local-6989586621679057163"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679057162"><span class="annot"><a href="#local-6989586621679057162"><span class="hs-identifier hs-type hs-type">prec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679057163"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">^</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">2</span></span><span class="annot"><span class="hs-operator hs-type">*</span></span><span class="annot"><a href="#local-6989586621679057162"><span class="hs-identifier hs-type">prec</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- | Constraint for known valid radix of p-adic number as well as it's  lifted radix.</span><span>
+</span><span id="line-38"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="Radix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-var">Radix</span></a></span></span><span> </span><span id="local-6989586621679057160"><span class="annot"><a href="#local-6989586621679057160"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679057159"><span class="annot"><a href="#local-6989586621679057159"><span class="hs-identifier hs-type">prec</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Constraint</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-39"></span><span>  </span><span id="Radix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Radix"><span class="hs-identifier hs-var">Radix</span></a></span></span><span> </span><span id="local-6989586621679057158"><span class="annot"><a href="#local-6989586621679057158"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span id="local-6989586621679057157"><span class="annot"><a href="#local-6989586621679057157"><span class="hs-identifier hs-type hs-type">prec</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679057157"><span class="hs-identifier hs-type">prec</span></a></span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#KnownRadix"><span class="hs-identifier hs-type">KnownRadix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057158"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-42"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#KnownRadix"><span class="hs-identifier hs-type">KnownRadix</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#LiftedRadix"><span class="hs-identifier hs-type">LiftedRadix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057158"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057157"><span class="hs-identifier hs-type">prec</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">{- | Precision sufficient for rational reconstruction of number belonging to a type @num@.
+Used in a type declaration as follows:
+
+&gt;&gt;&gt; x = 1 `div` 1234567898765432123456789 :: Z 2 (Sufficientprecision Word32 2)
+&gt;&gt;&gt; toRational x
+13822228938088947473 % 12702006275138148709
+&gt;&gt;&gt; x = 1 `div` 1234567898765432123456789 :: Z 2 (Sufficientprecision Int 2)
+&gt;&gt;&gt; toRational x
+1 % 1234567898765432123456789
+
+-}</span><span> </span><span>
+</span><span id="line-56"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span id="local-6989586621679057155"><span class="annot"><a href="#local-6989586621679057155"><span class="hs-identifier hs-type">num</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679057154"><span class="annot"><a href="#local-6989586621679057154"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-57"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">64</span></span><span>
+</span><span id="line-58"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">43</span></span><span>
+</span><span id="line-59"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><span class="hs-number">5</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">30</span></span><span>
+</span><span id="line-60"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><span class="hs-number">6</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">26</span></span><span>
+</span><span id="line-61"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><span class="hs-number">7</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">24</span></span><span>
+</span><span id="line-62"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word8</span></span><span> </span><span id="local-6989586621679057153"><span class="annot"><a href="#local-6989586621679057153"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Div</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><a href="#local-6989586621679057153"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">4</span></span><span>
+</span><span id="line-63"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word16</span></span><span> </span><span id="local-6989586621679057152"><span class="annot"><a href="#local-6989586621679057152"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Div</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><a href="#local-6989586621679057152"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">2</span></span><span>
+</span><span id="line-64"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span id="local-6989586621679057151"><span class="annot"><a href="#local-6989586621679057151"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">*</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><a href="#local-6989586621679057151"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-operator hs-type">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
+</span><span id="line-65"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span id="local-6989586621679057150"><span class="annot"><a href="#local-6989586621679057150"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">*</span></span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word32</span></span><span> </span><span class="annot"><a href="#local-6989586621679057150"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-66"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word</span></span><span> </span><span id="local-6989586621679057149"><span class="annot"><a href="#local-6989586621679057149"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Word64</span></span><span> </span><span class="annot"><a href="#local-6989586621679057149"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-67"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span id="local-6989586621679057148"><span class="annot"><a href="#local-6989586621679057148"><span class="hs-identifier hs-type hs-type">t</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679057147"><span class="annot"><a href="#local-6989586621679057147"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057148"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057147"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-68"></span><span>  </span><span id="SufficientPrecision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-var">SufficientPrecision</span></a></span></span><span> </span><span id="local-6989586621679057146"><span class="annot"><a href="#local-6989586621679057146"><span class="hs-identifier hs-type hs-type">t</span></a></span></span><span> </span><span id="local-6989586621679057145"><span class="annot"><a href="#local-6989586621679057145"><span class="hs-identifier hs-type hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Div</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#SufficientPrecision"><span class="hs-identifier hs-type">SufficientPrecision</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057146"><span class="hs-identifier hs-type">t</span></a></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Log2</span></span><span> </span><span class="annot"><a href="#local-6989586621679057145"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="hs-comment">{- | Type family for p-adic numbers with precision defined by reconstructable number type.
+
+&gt;&gt;&gt;123456 :: Padic Int 7
+1022634
+&gt;&gt;&gt; toInteger it
+123456
+&gt;&gt;&gt; toRational (12345678987654321 :: Padic (Ratio Word16) 3)
+537143292837 % 5612526479  -- insufficiend precision for proper reconstruction!!
+&gt;&gt;&gt; toRational (12345678987654321 :: Padic Rational 3)
+12345678987654321 % 1
+
+-}</span><span>
+</span><span id="line-82"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">family</span><span> </span><span id="Padic"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Padic"><span class="hs-identifier hs-var">Padic</span></a></span></span><span> </span><span id="local-6989586621679057143"><span class="annot"><a href="#local-6989586621679057143"><span class="hs-identifier hs-type">num</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679057142"><span class="annot"><a href="#local-6989586621679057142"><span class="hs-identifier hs-type">p</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Nat</span></span><span class="hs-special">)</span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span class="hs-comment">------------------------------------------------------------</span><span>
+</span><span id="line-85"></span><span class="hs-comment">{- | Typeclass for p-adic numbers.
+
+-}</span><span>
+</span><span id="line-88"></span><span class="hs-keyword">class</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span id="PadicNum"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-var">PadicNum</span></a></span></span><span> </span><span id="local-6989586621679057223"><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-89"></span><span>  </span><span class="hs-comment">-- | A type for p-adic unit.</span><span>
+</span><span id="line-90"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Unit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Unit"><span class="hs-identifier hs-var">Unit</span></a></span></span><span> </span><span id="local-6989586621679057223"><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span></span><span>
+</span><span id="line-91"></span><span>  </span><span class="hs-comment">-- | A type for digits of p-adic expansion.</span><span>
+</span><span id="line-92"></span><span>  </span><span class="hs-comment">-- Associated type allows to assure that digits will agree with the radix @p@ of the number.</span><span>
+</span><span id="line-93"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Digit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Digit"><span class="hs-identifier hs-var">Digit</span></a></span></span><span> </span><span id="local-6989586621679057223"><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span></span><span>
+</span><span id="line-94"></span><span>  </span><span class="hs-comment">-- | Returns the precision of a number.</span><span>
+</span><span id="line-95"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-96"></span><span>  </span><span class="hs-comment">-- Examples:</span><span>
+</span><span id="line-97"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-98"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; precision (123 :: Z 2)</span><span>
+</span><span id="line-99"></span><span>  </span><span class="hs-comment">-- 20</span><span>
+</span><span id="line-100"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; precision (123 :: Z' 2 40)</span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-comment">-- 40</span><span>
+</span><span id="line-102"></span><span>  </span><span id="local-6989586621679057185"><span id="precision"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#precision"><span class="hs-identifier hs-type">precision</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679057185"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057185"><span class="hs-identifier hs-type">i</span></a></span></span><span>
+</span><span id="line-103"></span><span>  </span><span class="hs-comment">-- | Returns the radix of a number</span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-comment">-- Examples:</span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; radix (5 :: Z 13)</span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-comment">-- 13</span><span>
+</span><span id="line-109"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; radix (-5 :: Q' 3 40)</span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-comment">-- 3</span><span>
+</span><span id="line-111"></span><span>  </span><span id="local-6989586621679057207"><span id="radix"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#radix"><span class="hs-identifier hs-type">radix</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679057207"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057207"><span class="hs-identifier hs-type">i</span></a></span></span><span>
+</span><span id="line-112"></span><span> </span><span>
+</span><span id="line-113"></span><span>  </span><span class="hs-comment">-- | Constructor for a digital object from it's digits</span><span>
+</span><span id="line-114"></span><span>  </span><span id="fromDigits"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#fromDigits"><span class="hs-identifier hs-type">fromDigits</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Digit"><span class="hs-identifier hs-type">Digit</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-115"></span><span>  </span><span class="hs-comment">-- | Returns digits of a digital object</span><span>
+</span><span id="line-116"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-117"></span><span>  </span><span class="hs-comment">-- Examples:</span><span>
+</span><span id="line-118"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-119"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; digits (123 :: Z 10)</span><span>
+</span><span id="line-120"></span><span>  </span><span class="hs-comment">-- [(3 `modulo` 10),(2 `modulo` 10),(1 `modulo` 10),(0 `modulo` 10),(0 `modulo` 10)]</span><span>
+</span><span id="line-121"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; take 5 $ digits (-123 :: Z 2)</span><span>
+</span><span id="line-122"></span><span>  </span><span class="hs-comment">-- [(1 `modulo` 2),(0 `modulo` 2),(1 `modulo` 2),(0 `modulo` 2),(0 `modulo` 2)]</span><span>
+</span><span id="line-123"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; take 5 $ digits (1/300 :: Q 10)</span><span>
+</span><span id="line-124"></span><span>  </span><span class="hs-comment">-- [(7 `modulo` 10),(6 `modulo` 10),(6 `modulo` 10),(6 `modulo` 10),(6 `modulo` 10)]</span><span>
+</span><span id="line-125"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-126"></span><span>  </span><span id="digits"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#digits"><span class="hs-identifier hs-type">digits</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Digit"><span class="hs-identifier hs-type">Digit</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-127"></span><span>  </span><span class="hs-comment">-- | Returns lifted digits</span><span>
+</span><span id="line-128"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-129"></span><span>  </span><span class="hs-comment">-- Examples:</span><span>
+</span><span id="line-130"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-131"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; lifted (123 :: Z 10)</span><span>
+</span><span id="line-132"></span><span>  </span><span class="hs-comment">-- 123</span><span>
+</span><span id="line-133"></span><span>  </span><span class="hs-comment">-- &gt;&gt;&gt; lifted (-123 :: Z 10)</span><span>
+</span><span id="line-134"></span><span>  </span><span class="hs-comment">-- 9999999999999999999999999999999999999999877</span><span>
+</span><span id="line-135"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-136"></span><span>  </span><span id="lifted"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#lifted"><span class="hs-identifier hs-type">lifted</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span>
+</span><span id="line-137"></span><span>
+</span><span id="line-138"></span><span>  </span><span class="hs-comment">-- | Creates digital object from it's lifted digits.</span><span>
+</span><span id="line-139"></span><span>  </span><span id="mkUnit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#mkUnit"><span class="hs-identifier hs-type">mkUnit</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-140"></span><span>
+</span><span id="line-141"></span><span>  </span><span class="hs-comment">-- | Creates p-adic number from given unit and valuation.</span><span>
+</span><span id="line-142"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-143"></span><span>  </span><span class="hs-comment">-- prop&gt; fromUnit (u, v) = u * p^v</span><span>
+</span><span id="line-144"></span><span>  </span><span id="fromUnit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#fromUnit"><span class="hs-identifier hs-type">fromUnit</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Unit"><span class="hs-identifier hs-type">Unit</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-145"></span><span>  </span><span class="hs-comment">-- | Splits p-adic number into unit and valuation.</span><span>
+</span><span id="line-146"></span><span>  </span><span class="hs-comment">--</span><span>
+</span><span id="line-147"></span><span>  </span><span class="hs-comment">-- prop&gt; splitUnit (u * p^v) = (u, v)</span><span>
+</span><span id="line-148"></span><span>  </span><span id="splitUnit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#splitUnit"><span class="hs-identifier hs-type">splitUnit</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Unit"><span class="hs-identifier hs-type">Unit</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-149"></span><span> </span><span>
+</span><span id="line-150"></span><span>  </span><span class="hs-comment">-- | Returns @True@ for a p-adic number which is multiplicatively invertible.</span><span>
+</span><span id="line-151"></span><span>  </span><span id="isInvertible"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#isInvertible"><span class="hs-identifier hs-type">isInvertible</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-152"></span><span>
+</span><span id="line-153"></span><span>  </span><span class="hs-comment">-- | Partial multiplicative inverse of p-adic number (defined both for integer or rational p-adics).</span><span>
+</span><span id="line-154"></span><span>  </span><span id="inverse"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#inverse"><span class="hs-identifier hs-type">inverse</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679057223"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-155"></span><span>  </span><span>
+</span><span id="line-156"></span><span>
+</span><span id="line-157"></span><span class="hs-comment">{- | The least significant digit of a p-adic number.
+--
+-- &gt;&gt;&gt; firstDigit (123 :: Z 10)
+-- (3 `modulo` 10)
+-- &gt;&gt;&gt; firstDigit (123 :: Z 257)
+-- (123 `modulo` 257)
+-}</span><span>
+</span><span id="line-164"></span><span id="local-6989586621679057131"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#firstDigit"><span class="hs-identifier hs-type">firstDigit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057131"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057131"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Digit"><span class="hs-identifier hs-type">Digit</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057131"><span class="hs-identifier hs-type">n</span></a></span></span><span>
+</span><span id="line-165"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#firstDigit"><span class="hs-pragma hs-type">firstDigit</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-166"></span><span id="firstDigit"><span class="annot"><span class="annottext">firstDigit :: n -&gt; Digit n
+</span><a href="Math.NumberTheory.Padic.Types.html#firstDigit"><span class="hs-identifier hs-var hs-var">firstDigit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Digit n] -&gt; Digit n
+forall a. [a] -&gt; a
+</span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">([Digit n] -&gt; Digit n) -&gt; (n -&gt; [Digit n]) -&gt; n -&gt; Digit n
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">n -&gt; [Digit n]
+forall n. PadicNum n =&gt; n -&gt; [Digit n]
+</span><a href="Math.NumberTheory.Padic.Types.html#digits"><span class="hs-identifier hs-var">digits</span></a></span><span>
+</span><span id="line-167"></span><span>
+</span><span id="line-168"></span><span class="hs-comment">{- | Returns p-adic number reduced modulo @p@
+
+&gt;&gt;&gt; reduce (123 :: Z 10) :: Mod 100
+(23 `modulo` 100)
+-}</span><span>
+</span><span id="line-173"></span><span id="local-6989586621679057126"><span id="local-6989586621679057127"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#reduce"><span class="hs-identifier hs-type">reduce</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#KnownRadix"><span class="hs-identifier hs-type">KnownRadix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057127"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057126"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057126"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Mod</span></span><span> </span><span class="annot"><a href="#local-6989586621679057127"><span class="hs-identifier hs-type">p</span></a></span></span></span><span>
+</span><span id="line-174"></span><span id="reduce"><span class="annot"><span class="annottext">reduce :: n -&gt; Mod p
+</span><a href="Math.NumberTheory.Padic.Types.html#reduce"><span class="hs-identifier hs-var hs-var">reduce</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Mod p
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Mod p) -&gt; (n -&gt; Integer) -&gt; n -&gt; Mod p
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">n -&gt; Integer
+forall n. PadicNum n =&gt; n -&gt; Integer
+</span><a href="Math.NumberTheory.Padic.Types.html#lifted"><span class="hs-identifier hs-var">lifted</span></a></span><span>
+</span><span id="line-175"></span><span>
+</span><span id="line-176"></span><span>
+</span><span id="line-177"></span><span class="hs-comment">{- | Returns the p-adic unit of a number
+
+Examples:
+
+&gt;&gt;&gt; unit (120 :: Z 10)
+12
+&gt;&gt;&gt; unit (75 :: Z 5)
+3 -}</span><span>
+</span><span id="line-185"></span><span id="local-6989586621679057124"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057124"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057124"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Unit"><span class="hs-identifier hs-type">Unit</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057124"><span class="hs-identifier hs-type">n</span></a></span></span><span>
+</span><span id="line-186"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-pragma hs-type">unit</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-187"></span><span id="unit"><span class="annot"><span class="annottext">unit :: n -&gt; Unit n
+</span><a href="Math.NumberTheory.Padic.Types.html#unit"><span class="hs-keyword hs-var hs-var">unit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Unit n, Int) -&gt; Unit n
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">((Unit n, Int) -&gt; Unit n) -&gt; (n -&gt; (Unit n, Int)) -&gt; n -&gt; Unit n
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">n -&gt; (Unit n, Int)
+forall n. PadicNum n =&gt; n -&gt; (Unit n, Int)
+</span><a href="Math.NumberTheory.Padic.Types.html#splitUnit"><span class="hs-identifier hs-var">splitUnit</span></a></span><span>
+</span><span id="line-188"></span><span>
+</span><span id="line-189"></span><span class="hs-comment">{- | Returns a p-adic valuation of a number
+
+Examples:
+
+&gt;&gt;&gt; valuation (120 :: Z 10)
+1
+&gt;&gt;&gt; valuation (75 :: Z 5)
+2
+
+Valuation of zero is equal to working precision
+
+&gt;&gt;&gt; valuation (0 :: Q 2)
+64
+&gt;&gt;&gt; valuation (0 :: Q 10)
+21 -}</span><span>
+</span><span id="line-204"></span><span id="local-6989586621679057203"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-type">valuation</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057203"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057203"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span><span>
+</span><span id="line-205"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-pragma hs-type">valuation</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-206"></span><span id="valuation"><span class="annot"><span class="annottext">valuation :: n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var hs-var">valuation</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Unit n, Int) -&gt; Int
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((Unit n, Int) -&gt; Int) -&gt; (n -&gt; (Unit n, Int)) -&gt; n -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">n -&gt; (Unit n, Int)
+forall n. PadicNum n =&gt; n -&gt; (Unit n, Int)
+</span><a href="Math.NumberTheory.Padic.Types.html#splitUnit"><span class="hs-identifier hs-var">splitUnit</span></a></span><span>
+</span><span id="line-207"></span><span>
+</span><span id="line-208"></span><span class="hs-comment">{- | Returns a rational p-adic norm of a number \(|x|_p\).
+
+Examples:
+
+&gt;&gt;&gt; norm (120 :: Z 10)
+0.1
+&gt;&gt;&gt; norm (75 :: Z 5)
+4.0e-2
+-}</span><span>
+</span><span id="line-217"></span><span id="local-6989586621679057120"><span id="local-6989586621679057121"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#norm"><span class="hs-identifier hs-type">norm</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679057121"><span class="hs-identifier hs-type">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057120"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057120"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ratio</span></span><span> </span><span class="annot"><a href="#local-6989586621679057121"><span class="hs-identifier hs-type">i</span></a></span></span></span><span>
+</span><span id="line-218"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#norm"><span class="hs-pragma hs-type">norm</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-219"></span><span id="norm"><span class="annot"><span class="annottext">norm :: n -&gt; Ratio i
+</span><a href="Math.NumberTheory.Padic.Types.html#norm"><span class="hs-identifier hs-var hs-var">norm</span></a></span></span><span> </span><span id="local-6989586621679057118"><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057118"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">n -&gt; i
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#radix"><span class="hs-identifier hs-var">radix</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057118"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">i -&gt; i -&gt; Ratio i
+forall a. Integral a =&gt; a -&gt; a -&gt; Ratio a
+</span><span class="hs-operator hs-var">%</span></span><span> </span><span class="annot"><span class="annottext">i
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ratio i -&gt; Int -&gt; Ratio i
+forall a b. (Fractional a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^^</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">n -&gt; Int
+forall n. PadicNum n =&gt; n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var">valuation</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057118"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-220"></span><span>
+</span><span id="line-221"></span><span class="hs-comment">{- | Adjusts unit and valuation of p-adic number, by removing trailing zeros from the right-side of the unit.
+
+Examples:
+
+&gt;&gt;&gt; &#955;&gt; x = 2313 + 1387 :: Q 10
+&gt;&gt;&gt; x
+3700.0
+&gt;&gt;&gt; splitUnit x
+(3700,0)
+&gt;&gt;&gt; splitUnit (normalize x)
+(37,2) -}</span><span>
+</span><span id="line-232"></span><span id="local-6989586621679057115"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-type">normalize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057115"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057115"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057115"><span class="hs-identifier hs-type">n</span></a></span></span><span>
+</span><span id="line-233"></span><span id="normalize"><span class="annot"><span class="annottext">normalize :: n -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#normalize"><span class="hs-identifier hs-var hs-var">normalize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Unit n, Int) -&gt; n
+forall n. PadicNum n =&gt; (Unit n, Int) -&gt; n
+</span><a href="Math.NumberTheory.Padic.Types.html#fromUnit"><span class="hs-identifier hs-var">fromUnit</span></a></span><span> </span><span class="annot"><span class="annottext">((Unit n, Int) -&gt; n) -&gt; (n -&gt; (Unit n, Int)) -&gt; n -&gt; n
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">n -&gt; (Unit n, Int)
+forall n. PadicNum n =&gt; n -&gt; (Unit n, Int)
+</span><a href="Math.NumberTheory.Padic.Types.html#splitUnit"><span class="hs-identifier hs-var">splitUnit</span></a></span><span>
+</span><span id="line-234"></span><span>
+</span><span id="line-235"></span><span class="hs-comment">-- | Returns @True@ for a p-adic number which is equal to zero (within it's precision).</span><span>
+</span><span id="line-236"></span><span id="local-6989586621679057113"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#isZero"><span class="hs-identifier hs-type">isZero</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057113"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057113"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span></span><span>
+</span><span id="line-237"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#isZero"><span class="hs-pragma hs-type">isZero</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-238"></span><span id="isZero"><span class="annot"><span class="annottext">isZero :: n -&gt; Bool
+</span><a href="Math.NumberTheory.Padic.Types.html#isZero"><span class="hs-identifier hs-var hs-var">isZero</span></a></span></span><span> </span><span id="local-6989586621679057111"><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057111"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">n -&gt; Int
+forall n. PadicNum n =&gt; n -&gt; Int
+</span><a href="Math.NumberTheory.Padic.Types.html#valuation"><span class="hs-identifier hs-var">valuation</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057111"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">n -&gt; Int
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#precision"><span class="hs-identifier hs-var">precision</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057111"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-239"></span><span>
+</span><span id="line-240"></span><span id="local-6989586621679057109"><span id="local-6989586621679057110"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#liftedRadix"><span class="hs-identifier hs-type">liftedRadix</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057110"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679057109"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057110"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057109"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-241"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#liftedRadix"><span class="hs-pragma hs-type">liftedRadix</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-242"></span><span id="liftedRadix"><span class="annot"><span class="annottext">liftedRadix :: n -&gt; a
+</span><a href="Math.NumberTheory.Padic.Types.html#liftedRadix"><span class="hs-identifier hs-var hs-var">liftedRadix</span></a></span></span><span> </span><span id="local-6989586621679057107"><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057107"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">n -&gt; a
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#radix"><span class="hs-identifier hs-var">radix</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057107"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Integer -&gt; a
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><span class="hs-operator hs-var">^</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">2</span></span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span class="annot"><span class="annottext">n -&gt; Integer
+forall n i. (PadicNum n, Integral i) =&gt; n -&gt; i
+</span><a href="Math.NumberTheory.Padic.Types.html#precision"><span class="hs-identifier hs-var">precision</span></a></span><span> </span><span class="annot"><span class="annottext">n
+</span><a href="#local-6989586621679057107"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-243"></span><span>
+</span><span id="line-244"></span><span class="hs-comment">{- | For given radix \(p\) and natural number \(m\) returns precision sufficient for rational
+reconstruction of fractions with numerator and denominator not exceeding \(m\).
+
+Examples:
+
+&gt;&gt;&gt; sufficientPrecision 2 (maxBound :: Int)
+64
+&gt;&gt;&gt; sufficientPrecision 3 (maxBound :: Int)
+41
+&gt;&gt;&gt; sufficientPrecision 10 (maxBound :: Int)
+20
+-}</span><span>
+</span><span id="line-256"></span><span id="local-6989586621679057103"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#sufficientPrecision"><span class="hs-identifier hs-type">sufficientPrecision</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679057103"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057103"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span></span><span>
+</span><span id="line-257"></span><span id="sufficientPrecision"><span class="annot"><span class="annottext">sufficientPrecision :: Integer -&gt; a -&gt; Integer
+</span><a href="Math.NumberTheory.Padic.Types.html#sufficientPrecision"><span class="hs-identifier hs-var hs-var">sufficientPrecision</span></a></span></span><span> </span><span id="local-6989586621679057101"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679057101"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679057100"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679057100"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a b. (Integral a, Integral b) =&gt; a -&gt; a -&gt; b
+</span><a href="Math.NumberTheory.Padic.Types.html#ilog"><span class="hs-identifier hs-var">ilog</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679057101"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679057100"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">2</span></span><span>
+</span><span id="line-258"></span><span>
+</span><span id="line-259"></span><span id="local-6989586621679057192"><span id="local-6989586621679057193"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#ilog"><span class="hs-identifier hs-type">ilog</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679057193"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integral</span></span><span> </span><span class="annot"><a href="#local-6989586621679057192"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057193"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057193"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679057192"><span class="hs-identifier hs-type">b</span></a></span></span></span><span>
+</span><span id="line-260"></span><span id="ilog"><span class="annot"><span class="annottext">ilog :: a -&gt; a -&gt; b
+</span><a href="Math.NumberTheory.Padic.Types.html#ilog"><span class="hs-identifier hs-var hs-var">ilog</span></a></span></span><span> </span><span id="local-6989586621679057098"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679057098"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679057097"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679057097"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-261"></span><span>  </span><span class="annot"><span class="annottext">Integer -&gt; b
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; b) -&gt; Integer -&gt; b
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int# -&gt; Integer
+</span><span class="hs-identifier hs-var">smallInteger</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Int#
+</span><span class="hs-identifier hs-var">integerLogBase#</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679057098"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679057097"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-262"></span><span>
+</span><span id="line-263"></span><span>
+</span><span id="line-264"></span><span class="hs-comment">-----------------------------------------------------------</span><span>
+</span><span id="line-265"></span><span>
+</span><span id="line-266"></span><span id="local-6989586621679057096"><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#KnownRadix"><span class="hs-identifier hs-type">KnownRadix</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679057096"><span class="hs-identifier hs-type">p</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#PadicNum"><span class="hs-identifier hs-type">PadicNum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Mod</span></span><span> </span><span class="annot"><a href="#local-6989586621679057096"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-267"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Unit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Unit"><span class="hs-identifier hs-var">Unit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Mod</span></span><span> </span><span class="annot"><a href="#local-6989586621679057096"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Mod</span></span><span> </span><span class="annot"><a href="#local-6989586621679057096"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-268"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="Digit"><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#Digit"><span class="hs-identifier hs-var">Digit</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Mod</span></span><span> </span><span class="annot"><a href="#local-6989586621679057096"><span class="hs-identifier hs-type">p</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Mod</span></span><span> </span><span class="annot"><a href="#local-6989586621679057096"><span class="hs-identifier hs-type">p</span></a></span><span>
+</span><span id="line-269"></span><span>  </span><span id="local-6989586621679057082"><span class="annot"><span class="annottext">radix :: Mod p -&gt; i
+</span><a href="#local-6989586621679057082"><span class="hs-identifier hs-var hs-var hs-var hs-var">radix</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; i
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; i) -&gt; (Mod p -&gt; Integer) -&gt; Mod p -&gt; i
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; Integer
+forall (n :: Nat) (proxy :: Nat -&gt; Type).
+KnownNat n =&gt;
+proxy n -&gt; Integer
+</span><span class="hs-identifier hs-var">natVal</span></span><span>
+</span><span id="line-270"></span><span>  </span><span id="local-6989586621679057080"><span class="annot"><span class="annottext">precision :: Mod p -&gt; i
+</span><a href="#local-6989586621679057080"><span class="hs-identifier hs-var hs-var hs-var hs-var">precision</span></a></span></span><span> </span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; i
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+forall a. Bounded a =&gt; a
+</span><span class="hs-identifier hs-var">maxBound</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-271"></span><span>  </span><span id="local-6989586621679057078"><span class="annot"><span class="annottext">digits :: Mod p -&gt; [Digit (Mod p)]
+</span><a href="#local-6989586621679057078"><span class="hs-identifier hs-var hs-var hs-var hs-var">digits</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; [Digit (Mod p)]
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span>
+</span><span id="line-272"></span><span>  </span><span id="local-6989586621679057077"><span class="annot"><span class="annottext">fromDigits :: [Digit (Mod p)] -&gt; Mod p
+</span><a href="#local-6989586621679057077"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromDigits</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Digit (Mod p)] -&gt; Mod p
+forall a. [a] -&gt; a
+</span><span class="hs-identifier hs-var">head</span></span><span>
+</span><span id="line-273"></span><span>  </span><span id="local-6989586621679057076"><span class="annot"><span class="annottext">lifted :: Mod p -&gt; Integer
+</span><a href="#local-6989586621679057076"><span class="hs-identifier hs-var hs-var hs-var hs-var">lifted</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Natural -&gt; Integer) -&gt; (Mod p -&gt; Natural) -&gt; Mod p -&gt; Integer
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; Natural
+forall (m :: Nat). Mod m -&gt; Natural
+</span><span class="hs-identifier hs-var hs-var">unMod</span></span><span>
+</span><span id="line-274"></span><span>  </span><span id="local-6989586621679057074"><span class="annot"><span class="annottext">mkUnit :: Integer -&gt; Mod p
+</span><a href="#local-6989586621679057074"><span class="hs-identifier hs-var hs-var hs-var hs-var">mkUnit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Mod p
+forall a. Num a =&gt; Integer -&gt; a
+</span><span class="hs-identifier hs-var">fromInteger</span></span><span>
+</span><span id="line-275"></span><span>  </span><span id="local-6989586621679057073"><span class="annot"><span class="annottext">inverse :: Mod p -&gt; Maybe (Mod p)
+</span><a href="#local-6989586621679057073"><span class="hs-identifier hs-var hs-var hs-var hs-var">inverse</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; Maybe (Mod p)
+forall (m :: Nat). KnownNat m =&gt; Mod m -&gt; Maybe (Mod m)
+</span><span class="hs-identifier hs-var">invertMod</span></span><span>
+</span><span id="line-276"></span><span>  </span><span id="local-6989586621679057071"><span class="annot"><span class="annottext">isInvertible :: Mod p -&gt; Bool
+</span><a href="#local-6989586621679057071"><span class="hs-identifier hs-var hs-var hs-var hs-var">isInvertible</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (Mod p) -&gt; Bool
+forall a. Maybe a -&gt; Bool
+</span><span class="hs-identifier hs-var">isJust</span></span><span> </span><span class="annot"><span class="annottext">(Maybe (Mod p) -&gt; Bool)
+-&gt; (Mod p -&gt; Maybe (Mod p)) -&gt; Mod p -&gt; Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Mod p -&gt; Maybe (Mod p)
+forall (m :: Nat). KnownNat m =&gt; Mod m -&gt; Maybe (Mod m)
+</span><span class="hs-identifier hs-var">invertMod</span></span><span> </span><span>
+</span><span id="line-277"></span><span>  </span><span id="local-6989586621679057070"><span class="annot"><span class="annottext">fromUnit :: (Unit (Mod p), Int) -&gt; Mod p
+</span><a href="#local-6989586621679057070"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromUnit</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679057069"><span class="annot"><span class="annottext">Unit (Mod p)
+</span><a href="#local-6989586621679057069"><span class="hs-identifier hs-var">u</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Mod p
+Unit (Mod p)
+</span><a href="#local-6989586621679057069"><span class="hs-identifier hs-var">u</span></a></span><span>
+</span><span id="line-278"></span><span>  </span><span class="annot"><a href="Math.NumberTheory.Padic.Types.html#fromUnit"><span class="hs-identifier hs-var">fromUnit</span></a></span><span> </span><span class="annot"><span class="annottext">(Unit (Mod p), Int)
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Mod p
+</span><span class="hs-number">0</span></span><span>
+</span><span id="line-279"></span><span>  </span><span id="local-6989586621679057068"><span class="annot"><span class="annottext">splitUnit :: Mod p -&gt; (Unit (Mod p), Int)
+</span><a href="#local-6989586621679057068"><span class="hs-identifier hs-var hs-var hs-var hs-var">splitUnit</span></a></span></span><span> </span><span id="local-6989586621679057067"><span class="annot"><span class="annottext">Mod p
+</span><a href="#local-6989586621679057067"><span class="hs-identifier hs-var">u</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Mod p
+Unit (Mod p)
+</span><a href="#local-6989586621679057067"><span class="hs-identifier hs-var">u</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span></span><span>
+</span><span id="line-280"></span><span>
+</span><span id="line-281"></span></pre></body></html>
