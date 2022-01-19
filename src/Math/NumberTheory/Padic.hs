@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds #-}
+
 {- |
 Module      : Math.NumberTheory.Padic.Fixed
 Description : Representation and simple algebra for p-adic numbers.
@@ -26,7 +26,7 @@ In order to gain efficiency the integer p-adic number with radix \(p\) is intern
 represented in form \((3)\) as only one digit \(N\), lifted to modulo \(p^k\), where \(k\) is
 chosen so that within working precision numbers belogning to @Int@ and @Ratio Int@ types could be
 reconstructed by extended Euclidean method. Form \((2)\) is used for textual output only, and form \((1)\)
-is used for transrornations to and from rationals.
+is used for transformations to and from rationals.
 
 The documentation and the module bindings use following terminology:
 
@@ -160,22 +160,3 @@ import Data.Word
 import Data.Ratio
 import Data.Mod
 
-pDigits p n d = series n
-  where
-    series 0 = []
-    series n =
-      let m = (n `div` d) `mod` p 
-      in m : series ((n - m * d) `div` p)
-
-ratrec max n m = go (m,0) (n,1)
-  where
-    go (v1, v2) (w1, w2)
-      | w1 < max = [(w1,w2)]
-      | otherwise = let q = v1 `div` w1
-                    in (v1, v2) : go (w1, w2) (v1 - q * w1, v2 - q * w2)
-
-
-(^^^) :: Radix p prec => Z' p prec -> Z' p prec -> Z' p prec 
-a ^^^ 0 = 1
-a ^^^ 1 = a
-a ^^^ b = a `zPow` (a ^^^ (b - 1))
